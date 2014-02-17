@@ -1,0 +1,37 @@
+<!doctype html>
+<head>
+    <title>Listing details</title>
+</head>
+
+<body>
+    <div>
+        <p>
+            {% if not 'token' in session %}
+                <a href="{{url_for('login')}}">Login</a>
+            {% else %}
+                You are currently logged in <a href="{{url_for('logout')}}">Logout</a>
+            {% endif %}
+        </p>
+    </div>
+
+    <h1>MLS# <a target="_blank" href="{{listing.ListingUri}}">{{listing.ListingId}}</a></h1>
+
+    <img src="{{listing.media.file}}" />
+
+    {% if 'token' in session %}
+        <p><a href="/listing_counts/{{listing.ListingKey}}">Listing Analytics</a></p>
+    {% endif %}
+
+    <ul>
+        <li>Price - {{'$%d'|format(listing.listingPricing.listPrice)}}</li>
+        <li>Address - {{listing.location.address.StreetNumber}}
+                      {{listing.location.address.StreetName}}
+                      {{listing.location.address.City}}
+                      {{listing.location.address.StateOrProvince}}
+                      {{listing.location.address.PostalCode}}</li>
+        <li>Bedrooms - {{listing.structure.BedroomsTotal}}</li>
+        <li>Bathrooms - {{listing.structure.BathroomsTotal}}</li>
+        <li>Cars - {{listing.structure.carsTotal}}</li>
+        <li>Living Area - {{listing.structure.livingArea}}</li>
+    </ul>
+</body>

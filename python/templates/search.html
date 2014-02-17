@@ -1,0 +1,40 @@
+<!doctype html>
+<head>
+    <title>Search for listings</title>
+</head>
+
+<body>
+    <div>
+        <p>
+            {% if not 'token' in session %}
+                <a href="{{url_for('login')}}">Login</a>
+            {% else %}
+                You are currently logged in <a href="{{url_for('logout')}}">Logout</a>
+            {% endif %}
+        </p>
+    </div>
+
+    <h1>Search Results</h1>
+
+    <div>
+        Total found - {{results.Count}}
+    </div>
+
+    <div>
+        <ul>
+            {% for listing in results.listing %}
+                <li><a href="/listing/{{listing.ListingKey}}">MLS# {{listing.ListingId}}</a> - {{listing.listingStatus.mlsStatus}} | {{'$%d'|format(listing.listingPricing.listPrice)}}</li>
+            {% endfor %}
+        </ul>
+
+        {% if request.args.get('page', '0')|int != 0 %}
+            <a href="{{url_for('search')}}?page={{request.args.get('page', '0')|int - 1}}">previous</a> |
+        {% endif %}
+
+        Page - {{request.args.get('page', '0')|int + 1}}
+
+        {% if results.Count > (request.args.get('page', '0')|int + 1) * 20 %}
+            | <a href="{{url_for('search')}}?page={{request.args.get('page', '0')|int + 1}}">next</a>
+        {% endif %}
+    </div>
+</body>

@@ -22,7 +22,7 @@ The python reference implementation uses the Flask micro framework. The applicat
 app.run(debug=True)
 ```
 
-To start the debug server, run the following:
+To start the debug server, add your API key and Flask secret key to config.py and then run the following:
 
 ```
 python app.py
