@@ -1,12 +1,42 @@
 {% extends 'base.html' %}
 {% block title %}Search for listings{% endblock %}
 
+{% block head %}
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css' rel='stylesheet' />
+
+    <style>
+        #map { width:650px; height: 450px; }
+    </style>
+{% endblock %}
+
 {% block content %}
     <h1>Search Results</h1>
 
     <div>
         Total found - {{results.Count}}
     </div>
+
+    <div id='map'></div>
+
+    <script>
+        var map = L.mapbox.map('map', '{{mapbox_key}}');
+        var featureGroup = new L.featureGroup();
+
+        {% for listing in results.listing %}
+        featureGroup.addLayer(new L.mapbox.featureLayer({
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [{{listing.location.gis.longitude}}, {{listing.location.gis.latitude}}]
+            }
+        }));
+        {% endfor %}
+
+        featureGroup.addTo(map);
+        map.fitBounds(featureGroup.getBounds().pad(0.5));
+    </script>
 
     <div>
         <ul>

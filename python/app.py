@@ -34,10 +34,10 @@ def index():
 @app.route('/search')
 def search():
     """Search for listings."""
-    params = urllib.urlencode({'MlsStatusin': 'Active', 'class': 'Residential', 'page': request.args.get('page', '0')})
+    params = urllib.urlencode({'MlsStatusin': 'Active', 'class': 'Residential', 'page': request.args.get('page', '0'), 'expand': 'true'})
     r = requests.get('%s&%s' % (base_url('search'), params))
     results = r.json()
-    return render_template('search.html', results=results)
+    return render_template('search.html', results=results, mapbox_key=config.mapbox_key)
 
 @app.route('/listing/<listing_id>')
 def listing(listing_id):

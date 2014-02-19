@@ -25,7 +25,7 @@
     <div id='map'></div>
 
     <script>
-        var map = L.mapbox.map('map', '{{mapbox_key}}').setView([33.4722265473003, -86.6102409468235], 12);
+        var map = L.mapbox.map('map', '{{mapbox_key}}');
 
         var featureLayer = L.mapbox.featureLayer({
             type: 'Feature',
@@ -37,11 +37,11 @@
                 title: '{{listing.ListingId}}',
                 description: '',
                 'marker-size': 'medium',
-                "marker-symbol": "building",
+                'marker-symbol': 'building',
                 'marker-color': '#0b243b'
             }
         }).addTo(map);
-        map.fitBounds(featureLayer.getBounds());
+        map.fitBounds(featureLayer.getBounds().pad(0.5));
     </script>
 
     <ul>
