@@ -6,6 +6,7 @@ This repository contains reference implementations for the Spring API (https://d
 Current API reference implementations
 
 * Python
+* Node.js
 
 # Python
 
@@ -29,3 +30,17 @@ python app.py
 ```
 
 then go to http://127.0.0.1:5000/
+
+# Node.js
+
+To install the dependencies for the Node.js reference implementation first install Node.js and then run the following:
+
+```
+npm install
+```
+
+This will install all dependencies. You can then start the express.js server by running the following:
+
+```
+node app.js
+```
