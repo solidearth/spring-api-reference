@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}{% endblock %}
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+
+    <body>
+        <div>
+            <ul>
+                <li><a href="{{url_for('search')}}">Home</a></li>
+            </ul>
+        </div>
+        <div>
+            <p>
+                {% if not 'token' in session %}
+                    <a href="{{url_for('login')}}">Login</a>
+                {% else %}
+                    You are currently logged in <a href="{{url_for('logout')}}">Logout</a>
+                {% endif %}
+            </p>
+        </div>
+
+        <div>
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>

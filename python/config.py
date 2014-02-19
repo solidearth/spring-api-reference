@@ -10,6 +10,8 @@ api_version = 'v1'
 sandbox = True
 # your api key
 api_key = ''
+# your mapbox key (demo key)
+mapbox_key = 'examples.map-9ijuk24y'
 # secret key to enable sessions
 secret_key = ''
 # site to use for requests (gcar, baarmls)

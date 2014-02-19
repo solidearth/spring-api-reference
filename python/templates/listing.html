@@ -1,29 +1,52 @@
-<!doctype html>
-<head>
-    <title>Listing details</title>
-</head>
+{% extends 'base.html' %}
+{% block title %}Listing details{% endblock %}
 
-<body>
-    <div>
-        <p>
-            {% if not 'token' in session %}
-                <a href="{{url_for('login')}}">Login</a>
-            {% else %}
-                You are currently logged in <a href="{{url_for('logout')}}">Logout</a>
-            {% endif %}
-        </p>
-    </div>
+{% block head %}
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css' rel='stylesheet' />
 
-    <h1>MLS# <a target="_blank" href="{{listing.ListingUri}}">{{listing.ListingId}}</a></h1>
+    <style>
+        #map { width:650px; height: 450px; }
+    </style>
+{% endblock %}
 
-    <img src="{{listing.media.file}}" />
+{% block content %}
+    <h1>MLS# <a target="_blank" href="https://baarmlsstaging.solidearth.com/listing/{{listing.ListingKey}}">{{listing.ListingId}}</a></h1>
+
+    {% if 'media' in listing %}
+      <img src="{{listing.media[0].file}}" />
+    {% endif %}
 
     {% if 'token' in session %}
         <p><a href="/listing_counts/{{listing.ListingKey}}">Listing Analytics</a></p>
     {% endif %}
 
+    <div id='map'></div>
+
+    <script>
+        var map = L.mapbox.map('map', '{{mapbox_key}}').setView([33.4722265473003, -86.6102409468235], 12);
+
+        var featureLayer = L.mapbox.featureLayer({
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [{{listing.location.gis.longitude}}, {{listing.location.gis.latitude}}]
+            },
+            properties: {
+                title: '{{listing.ListingId}}',
+                description: '',
+                'marker-size': 'medium',
+                "marker-symbol": "building",
+                'marker-color': '#0b243b'
+            }
+        }).addTo(map);
+        map.fitBounds(featureLayer.getBounds());
+    </script>
+
     <ul>
         <li>Price - {{'$%d'|format(listing.listingPricing.listPrice)}}</li>
+        <li>Property Type - {{listing.property.SubType}}</li>
         <li>Address - {{listing.location.address.StreetNumber}}
                       {{listing.location.address.StreetName}}
                       {{listing.location.address.City}}
@@ -34,4 +57,4 @@
         <li>Cars - {{listing.structure.carsTotal}}</li>
         <li>Living Area - {{listing.structure.livingArea}}</li>
     </ul>
-</body>
+{% endblock %}

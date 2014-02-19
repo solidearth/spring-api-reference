@@ -1,9 +1,7 @@
-<!doctype html>
-<head>
-    <title>Listing analytics</title>
-</head>
+{% extends 'base.html' %}
+{% block title %}Listing analytics{% endblock %}
 
-<body>
+{% block content %}
     <h1>Listing analytics for <a href="/listing/{{results._id}}">{{results._id}}</a></h1>
 
     <ul>
@@ -13,4 +11,4 @@
         <li>Total views - {{results.total}}</li>
         <li>Collections - {{results.collections}}</li>
     </ul>
-</body>
+{% endblock %}

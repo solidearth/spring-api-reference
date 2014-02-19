@@ -1,19 +1,7 @@
-<!doctype html>
-<head>
-    <title>Search for listings</title>
-</head>
+{% extends 'base.html' %}
+{% block title %}Search for listings{% endblock %}
 
-<body>
-    <div>
-        <p>
-            {% if not 'token' in session %}
-                <a href="{{url_for('login')}}">Login</a>
-            {% else %}
-                You are currently logged in <a href="{{url_for('logout')}}">Logout</a>
-            {% endif %}
-        </p>
-    </div>
-
+{% block content %}
     <h1>Search Results</h1>
 
     <div>
@@ -23,7 +11,11 @@
     <div>
         <ul>
             {% for listing in results.listing %}
-                <li><a href="/listing/{{listing.ListingKey}}">MLS# {{listing.ListingId}}</a> - {{listing.listingStatus.mlsStatus}} | {{'$%d'|format(listing.listingPricing.listPrice)}}</li>
+                <li>
+                    <a href="/listing/{{listing.ListingKey}}">
+                        MLS# {{listing.ListingId}}
+                    </a> - {{listing.listingStatus.mlsStatus}} | {{'$%d'|format(listing.listingPricing.listPrice)}} | {{listing.property.SubType}}
+                </li>
             {% endfor %}
         </ul>
 
@@ -37,4 +29,4 @@
             | <a href="{{url_for('search')}}?page={{request.args.get('page', '0')|int + 1}}">next</a>
         {% endif %}
     </div>
-</body>
+{% endblock %}
