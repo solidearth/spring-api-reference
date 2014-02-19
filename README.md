@@ -39,7 +39,7 @@ To install the dependencies for the Node.js reference implementation first insta
 npm install
 ```
 
-This will install all dependencies. You can then start the express.js server by running the following:
+To start the express.js server, add your API key and session secret key to config.json and run the following:
 
 ```
 node app.js

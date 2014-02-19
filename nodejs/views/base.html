@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}{% endblock %}
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+
+    <body>
+        <div>
+            <ul>
+                <li><a href="/search">Home</a></li>
+            </ul>
+        </div>
+        <div>
+            <p>
+                {% if session.token %}
+                    You are currently logged in <a href="/logout">Logout</a>
+                {% else %}
+                    <a href="/login">Login</a>
+                {% endif %}
+            </p>
+        </div>
+        
+        <div>
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>
