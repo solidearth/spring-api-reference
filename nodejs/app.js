@@ -101,6 +101,7 @@ function login(req, res) {
         res.redirect(
             util.format(
                 config.oauth_url,
+                sandbox,
                 config.api_key,
                 util.format('http://localhost:5001%s', app._router.build('oauth'))
             )

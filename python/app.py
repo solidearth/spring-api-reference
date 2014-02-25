@@ -59,7 +59,7 @@ def listing_counts(listing_id):
 def login():
     """Login to API using oauth."""
     if not 'token' in session:
-        return redirect(config.oauth_url % (config.api_key, 'http://localhost:5000%s' % url_for('oauth')));
+        return redirect(config.oauth_url % (sandbox, config.api_key, 'http://localhost:5000%s' % url_for('oauth')));
     else:
         return redirect(url_for('search'))
 
