@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "Listing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head
+{
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css' rel='stylesheet' />
+
+    <style>
+        #map { width:650px; height: 450px; }
+    </style>
+}
+
+<h1>MLS# <a target="_blank" href="https://baarmlsstaging.solidearth.com/listing/@Model.ListingKey">@Model.ListingId</a></h1>
+
+@if (Model.Media != null)
+{
+    <img src="@Model.Media[0].file" />
+}
+
+@if (Session["token"] != null)
+{
+    <p><a href="/listingcounters/@Model.ListingKey">Listing Analytics</a></p>
+}
+
+<div id='map'></div>
+
+<script>
+    var map = L.mapbox.map('map', '@ViewBag.MapBoxKey');
+
+    var featureLayer = L.mapbox.featureLayer({
+        type: 'Feature',
+        geometry: {
+            type: 'Point',
+            coordinates: [@Model.location.gis.longitude, @Model.location.gis.latitude]
+        },
+        properties: {
+            title: '@Model.ListingId',
+            description: '',
+            'marker-size': 'medium',
+            'marker-symbol': 'building',
+            'marker-color': '#0b243b'
+        }
+    }).addTo(map);
+    map.fitBounds(featureLayer.getBounds().pad(0.5));
+</script>
+
+<ul>
+    <li>Price - @string.Format("{0:c0}", Model.listingPricing.listPrice)</li>
+    <li>Property Type - @Model.property.SubType</li>
+    <li>Address - @Model.location.address.StreetNumber
+                    @Model.location.address.StreetName
+                    @Model.location.address.City
+                    @Model.location.address.StateOrProvince
+                    @Model.location.address.PostalCode</li>
+    <li>Bedrooms - @Model.structure.BedroomsTotal</li>
+    <li>Bathrooms - @Model.structure.BathroomsTotal</li>
+    <li>Cars - @Model.structure.carsTotal</li>
+    <li>Living Area - @Model.structure.livingArea</li>
+</ul>
