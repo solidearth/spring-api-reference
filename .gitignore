@@ -36,3 +36,7 @@ nosetests.xml
 .pydevproject
 
 nodejs/node_modules/
+csharp/SpringApi/packages/
+csharp/SpringApi/SpringApi/obj/Debug/
+*.user
+*.suo
