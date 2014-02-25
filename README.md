@@ -7,6 +7,7 @@ Current API reference implementations
 
 * Python
 * Node.js
+* JavaScript
 
 # Python
 
@@ -44,3 +45,9 @@ To start the express.js server, add your API key and session secret key to confi
 ```
 node app.js
 ```
+
+# JavaScript
+
+The JavaScript reference implementation uses JQuery and the Yelp API to find bars around listings using client calls (no server necessary).
+
+To start the application, add your Spring API key and Yelp API key to the API object in barfind.html and open the file in a web browser of your choice.

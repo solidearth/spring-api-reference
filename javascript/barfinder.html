@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Bar Finder</title>
+        <script type="text/javascript" src="js/jquery-1.8.3.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.9.2.js"></script>
+        <script type="text/javascript" src="js/bootstrap.js"></script>
+        <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.9.2.custom.css"/>
+        <link rel="stylesheet" href="css/bootstrap.css"/>
+    </head>
+
+    <script type="text/javascript">
+        // api access properties and methods 
+        var API = {
+            // object properties
+            springKey: '',
+            yelpKey: '',
+            jsonpCallback: '&callback=?',
+            baseSpringUrl: 'https://api.solidearth.com/sandbox/v1/search/',
+            baseYelpUrl: 'http://api.yelp.com/business_review_search',
+            site: 'baarmls',
+
+            // call spring API to retrieve listing info
+            getListings: function (location, minPrice, maxPrice, callback) {
+                // prepare url to spring API
+                var url = this.baseSpringUrl +
+                    this.site +
+                    '?ListPriceMin=' +
+                    minPrice +
+                    '&ListPriceMax=' +
+                    maxPrice +
+                    '&MlsStatusin=Active&class=Residential&_keywordsAll=' +
+                    location +
+                    '&format=json&callback=?&expand=true&api_key=' +
+                    this.springKey;
+                // use jsonp to get json back for the search terms provided
+                $.getJSON(url, null, callback);
+            },
+
+            // call yelp API to retrieve bar info
+            getBars: function (lng, lat, callback) {
+                // prepare url to yelp API
+                var url = this.baseYelpUrl +
+                    '?term=bar&long=' +
+                    lng +
+                    '&lat=' +
+                    lat +
+                    '&radius=3&limit=10&callback=?&ywsid=' +
+                    this.yelpKey;
+                // use jsonp to get json back for the search terms provided
+                $.getJSON(url, null, callback);
+            }
+        };
+
+        // callback used to build the bars
+        // returns a function that accepts data wrapped around a
+        // closure so we have access to the listing index id
+        var buildBars = function(index) {
+            var barIndex = index;
+
+            return function (data) {
+                $(data.businesses).each(function (index, bar) {
+                    // append bar to the existing results
+                    var innerHtml = '<h3>' + bar.name + '</h3><div>' +
+                                    '<div class="pull-left">' +
+                                    '<img src="' + bar.photo_url + '" />' + 
+                                    '</div>' +
+                                    '<div class="bar-details pull-left">' + 
+                                    '<a target="_blank" href="' + bar.url + '">' + bar.name + '</a>' +
+                                    '<br /><img src="' + bar.rating_img_url + '" />' +
+                                    '<br /><span class="badge">' + bar.review_count + '</span> reviews' +
+                                    '<br /><span class="badge">' + bar.distance.toFixed(1) + '</span> miles' +
+                                    '<br /><br />' + bar.reviews[0].text_excerpt +
+                                    '</div>' +
+                                    '</div>';
+
+                    $('#bar_' + barIndex).append(innerHtml);
+                });
+                // convert bars to accordion to save space
+                $('#bar_' + barIndex).accordion();
+            };
+        };
+
+        // callback used to build the listings
+        var buildListings = function(data) {
+            if (data.listing.length === 0) {
+                // hide loading message
+                $('#loading-container').hide(800);
+                // show not found message
+                $('#noresults').show(800);
+            }
+
+            $(data.listing).each(function (index, listing) {
+                // append row to results
+                var innerHtml = '<div class="row-fluid result-row dynamic-row">' +
+                                '<div class="listing span5 offset1">' +
+                                '    <div class="pull-left">';
+                if (listing.Media) {
+                    innerHtml += '<img src="https:' + listing.Media[0].file + '" />';
+                }
+                innerHtml +=    '    </div>' +
+                                '    <div class="listing-details pull-left">' + 
+                                '        <br /><div class="pull-left">Address: </div><div class="pull-left field-value">' + listing.location.address.StreetNumber + ' ' + listing.location.address.StreetName +
+                                '        <br />' + listing.location.address.City +
+                                '        <br />' + listing.location.address.StateOrProvince +
+                                '        <br />' + listing.location.address.PostalCode +
+                                '        </div><div class="clearfix">&nbsp;</div>' +
+                                '        <br />Price: <span>$' + listing.listingPricing.listPrice + '</span>' + 
+                                '        <br /><br /><span class="badge badge-inverse">' + listing.structure.livingArea + '</span> Sqft' +
+                                '        <br /><span class="badge badge-inverse">' + listing.structure.BedroomsTotal + '</span> beds' +
+                                '        <br /><span class="badge badge-inverse">' + listing.structure.BathroomsTotal + '</span> baths' +
+                                '        <br /><br /><span class="school">Elementary school: ' + listing.location.school.elementarySchool + '</span>' +
+                                '        <br /><span class="school">Middle  school: ' + listing.location.school.middleOrJuniorSchool + '</span>' +
+                                '        <br /><span class="school">High  school: ' + listing.location.school.highSchool + '</span>' +
+                                '    </div>' +
+                                '</div>' +
+                                '<div id="bar_' + index + '" class="bar span4">' +
+                                '</div>' +
+                                '</div>';
+
+                // hide loading message
+                $('#loading-container').hide(800);
+                // show listing result
+                $('#results').append(innerHtml);
+                var coordinates = listing.location.gis;
+                var lng = coordinates.longitude;
+                var lat = coordinates.latitude;
+                API.getBars(lng, lat, buildBars(index));
+            });
+        };
+
+        $(function () {
+            if (API.springKey === '') {
+                alert('Please provide your Spring API key in the API object.');
+            }
+            if (API.yelpKey === '') {
+                alert('Please provide your Yelp API key in the API object.');
+            }
+            // on load
+            $('#search-form').submit(function() {
+                // on form submit, search for listings and bars
+                var location = $('#location-term').val();        
+                var minPrice = $('#min-price-term').val();        
+                var maxPrice = $('#max-price-term').val();        
+
+                // check for empty terms for now
+                var error = location == '' || minPrice == '' || maxPrice == '';
+
+                if (error) {
+                    $('#errors').show(800);
+                } else {
+                    $('#noresults').hide(800);
+                    $('#errors').hide(800);
+                    $('#results').show(800);
+                    // reset results
+                    $('.dynamic-row').each(function (index, elem) {
+                        $(elem).remove();
+                    });
+                    $('#loading-container').slideDown(1500);
+                    API.getListings(location, minPrice, maxPrice, buildListings);
+                }
+                // do not actually submit the form
+                return false;
+            });
+        });
+    </script>
+
+    <style>
+        body {background-color : #FFF; margin-bottom: 50px;}
+        #results {display: none;}
+        #inner-container { text-align: center; padding: 30px 0 0 0;}
+        .page-header {color: #003F7F;}
+        #location-term, #min-price-term, #max-price-term {width: 150px;}
+        #description {padding: 0 0 30px 0;}
+        #errors, #noresults {display: none; color: #B94A48; font-weight: bold; padding: 0 0 20px 0;}
+        #loading-container {display: none; color: #3A87AD; font-weight: bold; padding: 0 0 20px 0;}
+        #search-submit {margin-bottom: 10px;}
+        #listing-header, #bar-header {color: #468847;}
+        .listing, .bar {text-align: left; padding: 0 0 0 40px;}
+        .result-row {margin-bottom: 70px;}
+        .listing img {width: 310px;}
+        .listing-details {margin-left: 50px;}
+        .bar-details {margin-bottom: 20px;}
+        .field-value {margin-left: 10px;}
+        .school {font-size: 12px;}
+    </style>
+
+    <body>
+        <div id="container-fluid">
+
+            <div id="inner-container">    
+
+                <div class="page-header">
+                    <h1>Bar Finder <small>Find bars around where you want to live</small></h1>
+                </div>
+
+                <div id="description" class="muted">
+                    Provide a Location, a Minimum Price, and a Maximum Price to
+                    get home listings along with bars nearby.
+                </div>
+
+                <div id="errors">
+                    <span class="badge badge-important">Errors</span>
+                    Please provide a valid Location, Minimum Price, and Maximum Price
+                </div>
+
+                <div id="noresults">
+                    <span class="badge badge-important">Loading</span>
+                    No Listings were found using your search criteria.
+                </div>
+
+                <div id="loading-container">
+                    <span class="badge badge-info">Loading</span>
+                    Finding Listings and Bars nearby based on your search.
+                </div>
+                
+                <div id="search">
+                    <form id="search-form" method="post" action=".">
+                        <input id="location-term" type="text"
+                        name="location-term" placeholder="Location" />
+                        <input id="min-price-term" type="text"
+                        name="min-price-term" placeholder="Minimum Price" />
+                        <input id="max-price-term" type="text"
+                        name="max-price-term" placeholder="Maximum Price" />
+                        <input id="search-submit" class="btn btn-primary" type="submit" value="Search" />
+                    </form>
+                </div>
+                
+                <div id="results" class="row-fluid">
+                    <div class="row-fluid">
+                        <div id="listing-header" class="span5 offset1">
+                            <h3>Listings</h3>
+                        </div>
+                        <div id="bar-header" class="span4">
+                            <h3>Bars</h3>
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </div>
+
+        </div>
+    </body>
+
+</html>
+
