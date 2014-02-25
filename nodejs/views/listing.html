@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Listing details{% endblock %}
+
+{% block head %}
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css' rel='stylesheet' />
+
+    <style>
+        #map { width:650px; height: 450px; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>MLS# <a target="_blank" href="https://baarmlsstaging.solidearth.com/listing/{{listing.ListingKey}}">{{listing.ListingId}}</a></h1>
+
+    {% if 'media' in listing %}
+      <img src="{{listing.media[0].file}}" />
+    {% endif %}
+
+    {% if 'token' in session %}
+        <p><a href="/listing_counts/{{listing.ListingKey}}">Listing Analytics</a></p>
+    {% endif %}
+
+    <div id='map'></div>
+
+    <script>
+        var map = L.mapbox.map('map', '{{mapbox_key}}');
+
+        var featureLayer = L.mapbox.featureLayer({
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [{{listing.location.gis.longitude}}, {{listing.location.gis.latitude}}]
+            },
+            properties: {
+                title: '{{listing.ListingId}}',
+                description: '',
+                'marker-size': 'medium',
+                'marker-symbol': 'building',
+                'marker-color': '#0b243b'
+            }
+        }).addTo(map);
+        map.fitBounds(featureLayer.getBounds().pad(0.5));
+    </script>
+
+    <ul>
+        <li>Price - ${{listing.listingPricing.listPrice}}</li>
+        <li>Property Type - {{listing.property.SubType}}</li>
+        <li>Address - {{listing.location.address.StreetNumber}}
+                      {{listing.location.address.StreetName}}
+                      {{listing.location.address.City}}
+                      {{listing.location.address.StateOrProvince}}
+                      {{listing.location.address.PostalCode}}</li>
+        <li>Bedrooms - {{listing.structure.BedroomsTotal}}</li>
+        <li>Bathrooms - {{listing.structure.BathroomsTotal}}</li>
+        <li>Cars - {{listing.structure.carsTotal}}</li>
+        <li>Living Area - {{listing.structure.livingArea}}</li>
+    </ul>
+{% endblock %}

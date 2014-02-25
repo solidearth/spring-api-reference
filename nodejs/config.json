@@ -1,0 +1,11 @@
+{
+    "port": 5001,
+    "oauth_url": "https://api.solidearth.com/sandbox/v1/oauth/authenticate?client_id=%s&redirect_uri=%s&response_type=token",
+    "api_base_url": "api.solidearth.com",
+    "api_version": "v1",
+    "sandbox": "True",
+    "api_key": "",
+    "mapbox_key": "examples.map-9ijuk24y",
+    "secret": "",
+    "site": "baarmls"
+}
