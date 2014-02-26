@@ -53,7 +53,7 @@ The JavaScript reference implementation uses JQuery and the Yelp API to find bar
 
 To start the application, add your Spring API key and Yelp API key to the API object in barfind.html and open the file in a web browser of your choice.
 
-# C#
+# C\#
 
 The C# reference implementation uses ASP.NET MVC 4.
 
