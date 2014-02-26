@@ -1,0 +1,80 @@
+﻿@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head
+{
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css' rel='stylesheet' />
+
+    <style>
+        #map { width:650px; height: 450px; }
+    </style>
+}
+
+<h1>Search Results</h1>
+
+<div>
+    Total found - @Model.Count
+</div>
+
+<div id='map'></div>
+
+<script>
+    var map = L.mapbox.map('map', '@ViewBag.MapBoxKey');
+    var featureGroup = new L.featureGroup();
+
+    @foreach (var listing in @Model.listing)
+    {
+        <text>
+        featureGroup.addLayer(new L.mapbox.featureLayer({
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: [@listing.location.gis.longitude, @listing.location.gis.latitude]
+            }
+        }));
+        </text>
+    }
+
+    featureGroup.addTo(map);
+    map.fitBounds(featureGroup.getBounds().pad(0.5));
+</script>
+
+<div>
+    <ul>
+        @foreach (var listing in @Model.listing)
+        {
+            <li>
+                <a href="/listing/@listing.ListingKey">
+                    MLS# @listing.ListingId
+                </a> - @listing.listingStatus.mlsStatus | @string.Format("{0:c0}", listing.listingPricing.listPrice) | @listing.property.SubType
+            </li>
+        }
+    </ul>
+
+    @if (Request.Params["page"] == null || Request.Params["page"] == "0")
+    {
+        <text>
+        Page - 1
+            | <a href="/search?page=1">next</a>
+        </text>
+    }
+    else
+    {
+        <a href="/search?page=@(int.Parse(Request.Params["page"]) - 1)">previous</a>
+        
+        <text>
+        | Page - @(int.Parse(Request.Params["page"]) + 1)
+        </text>
+
+        if (Model.Count > (int.Parse(Request.Params["page"]) + 1) * 20)
+        {
+            <text>
+            | <a href="/search?page=@(int.Parse(Request.Params["page"]) + 1)">next</a>
+            </text>
+        }
+    }
+</div>

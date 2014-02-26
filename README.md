@@ -8,6 +8,7 @@ Current API reference implementations
 * Python
 * Node.js
 * JavaScript
+* C#
 
 # Python
 
@@ -51,3 +52,13 @@ node app.js
 The JavaScript reference implementation uses JQuery and the Yelp API to find bars around listings using client calls (no server necessary).
 
 To start the application, add your Spring API key and Yelp API key to the API object in barfind.html and open the file in a web browser of your choice.
+
+# CSharp
+
+The C# reference implementation uses ASP.NET MVC 4.
+
+To start the application, add your Spring API to the web.config and start the application in Visual Studio using the following:
+
+```
+Ctrl + F5
+```

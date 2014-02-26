@@ -1,0 +1,33 @@
+﻿<!doctype html>
+<html lang="en">
+    <head>
+        @RenderSection("head", required: false)
+        <title>@ViewBag.Title</title>
+    </head>
+
+    <body>
+        <div>
+            <ul>
+                <li><a href="/search">Home</a></li>
+            </ul>
+        </div>
+        <div>
+            <p>
+                @if (Session["token"] != null)
+                {
+                    <text>
+                    You are currently logged in <a href="/logout">Logout</a>
+                    </text>
+                }
+                else
+                {
+                    <a href="/login">Login</a>
+                }
+            </p>
+        </div>
+        
+        <div>
+            @RenderBody()
+        </div>
+    </body>
+</html>
