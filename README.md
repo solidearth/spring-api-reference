@@ -47,6 +47,8 @@ To start the express.js server, add your API key and session secret key to confi
 node app.js
 ```
 
+then go to http://127.0.0.1:5001/
+
 # JavaScript
 
 The JavaScript reference implementation uses JQuery and the Yelp API to find bars around listings using client calls (no server necessary).
